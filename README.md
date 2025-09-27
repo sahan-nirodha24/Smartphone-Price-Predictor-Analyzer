@@ -253,4 +253,4 @@ This project is developed as part of an academic assignment for the **Bachelor o
 
 **⭐ If you find this project helpful, please give it a star!**
 
-*Made with ❤️ by the Horizon Campus BIT NMC Team*
+*Made with ❤️ by the Horizon Campus BIT NMC Group Invinsible Team*
