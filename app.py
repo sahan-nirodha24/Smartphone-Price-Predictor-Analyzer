@@ -17,130 +17,212 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Updated user-friendly color palette and styles
-st.markdown(
-    """
-    <style>
-        .stApp {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef, #dee2e6);
-            color: #2c3e50;
-            font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial;
+# Theme toggle in sidebar
+st.sidebar.title("🎨 Theme Settings")
+theme_mode = st.sidebar.selectbox("Choose Theme", ["Light Mode ☀️", "Dark Mode 🌙"], index=0)
+is_dark_mode = theme_mode == "Dark Mode 🌙"
+
+# Dynamic color palette based on theme
+def get_theme_colors(dark_mode=False):
+    if dark_mode:
+        return {
+            'bg_primary': '#0e1117',
+            'bg_secondary': '#262730',
+            'bg_card': '#1e1e1e',
+            'text_primary': '#ffffff',
+            'text_secondary': '#b3b3b3',
+            'border_color': '#404040',
+            'accent_green': '#00d4aa',
+            'accent_blue': '#1f77b4',
+            'accent_purple': '#9467bd',
+            'accent_red': '#d62728',
+            'hover_bg': '#2a2a2a',
+            'gradient_start': '#0e1117',
+            'gradient_end': '#262730',
+            'plot_bg': 'rgba(30,30,30,0.8)',
+            'paper_bg': '#1e1e1e'
         }
-        .main-header {
-            color: #2c3e50;
+    else:
+        return {
+            'bg_primary': 'linear-gradient(135deg, #f8f9fa, #e9ecef, #dee2e6)',
+            'bg_secondary': '#ffffff',
+            'bg_card': '#ffffff',
+            'text_primary': '#2c3e50',
+            'text_secondary': '#6c757d',
+            'border_color': '#e9ecef',
+            'accent_green': '#28a745',
+            'accent_blue': '#007bff',
+            'accent_purple': '#6f42c1',
+            'accent_red': '#dc3545',
+            'hover_bg': '#f8f9fa',
+            'gradient_start': '#ffffff',
+            'gradient_end': '#f8f9fa',
+            'plot_bg': 'rgba(248,249,250,0.8)',
+            'paper_bg': 'white'
+        }
+
+colors = get_theme_colors(is_dark_mode)
+
+# Updated dynamic styling based on theme
+st.markdown(
+    f"""
+    <style>
+        .stApp {{
+            background: {colors['bg_primary']};
+            color: {colors['text_primary']};
+            font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial;
+        }}
+        .main-header {{
+            color: {colors['text_primary']};
             font-weight: 700;
             font-size: 2.8rem;
             margin-bottom: 8px;
             text-align: center;
             letter-spacing: -0.5px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .sub-header {
-            color: #6c757d;
+            text-shadow: 0 2px 4px rgba(0,0,0,{'0.3' if is_dark_mode else '0.1'});
+        }}
+        .sub-header {{
+            color: {colors['text_secondary']};
             font-size: 1.1rem;
             text-align: center;
             margin-bottom: 22px;
             font-weight: 400;
-        }
-        .price-card {
-            background: linear-gradient(135deg, #ffffff, #f8f9fa);
-            border: 2px solid #28a745;
-            color: #28a745;
+        }}
+        .price-card {{
+            background: linear-gradient(135deg, {colors['gradient_start']}, {colors['gradient_end']});
+            border: 2px solid {colors['accent_green']};
+            color: {colors['accent_green']};
             padding: 18px;
             border-radius: 12px;
             text-align: center;
             font-weight: 600;
             font-size: 1.5rem;
             margin: 8px 0;
-            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.15);
+            box-shadow: 0 4px 12px rgba({'0, 212, 170' if is_dark_mode else '40, 167, 69'}, 0.15);
             transition: transform 0.2s ease;
-        }
-        .price-card:hover {
+        }}
+        .price-card:hover {{
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.2);
-        }
-        .metric-card {
-            background: #ffffff;
+            box-shadow: 0 6px 20px rgba({'0, 212, 170' if is_dark_mode else '40, 167, 69'}, 0.2);
+        }}
+        .metric-card {{
+            background: {colors['bg_card']};
             padding: 16px 18px;
             border-radius: 10px;
             margin: 10px 0;
-            border: 1px solid #e9ecef;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid {colors['border_color']};
+            box-shadow: 0 2px 8px rgba(0,0,0,{'0.3' if is_dark_mode else '0.08'});
             transition: box-shadow 0.2s ease;
-        }
-        .metric-card:hover {
-            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-        }
-        .metric-card h4 {
-            color: #495057;
+        }}
+        .metric-card:hover {{
+            box-shadow: 0 4px 16px rgba(0,0,0,{'0.4' if is_dark_mode else '0.12'});
+        }}
+        .metric-card h4 {{
+            color: {colors['text_primary']};
             margin-bottom: 8px;
             font-size: 1rem;
             font-weight: 600;
-        }
-        .comparison-card {
-            background: linear-gradient(135deg, #ffffff, #f8f9fa);
-            color: #2c3e50;
+        }}
+        .comparison-card {{
+            background: linear-gradient(135deg, {colors['gradient_start']}, {colors['gradient_end']});
+            color: {colors['text_primary']};
             padding: 18px;
             border-radius: 10px;
             margin: 12px 0;
-            border-left: 4px solid #007bff;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            border-left: 4px solid {colors['accent_blue']};
+            box-shadow: 0 2px 12px rgba(0,0,0,{'0.3' if is_dark_mode else '0.08'});
             transition: transform 0.2s ease;
-        }
-        .comparison-card:hover {
+        }}
+        .comparison-card:hover {{
             transform: translateX(4px);
-        }
-        .soft-note {
-            color: #6c757d;
+        }}
+        .soft-note {{
+            color: {colors['text_secondary']};
             font-size: 0.9rem;
             line-height: 1.4;
-        }
-        .tight { 
+        }}
+        .tight {{ 
             margin-top: -4px; 
             margin-bottom: 4px;
-        }
-        .spacer-8 { height: 8px; }
-        .spacer-16 { height: 16px; }
-        .spacer-24 { height: 24px; }
+        }}
+        .spacer-8 {{ height: 8px; }}
+        .spacer-16 {{ height: 16px; }}
+        .spacer-24 {{ height: 24px; }}
         
         /* Sidebar styling */
-        .css-1d391kg {
-            background: #ffffff;
-        }
+        .css-1d391kg {{
+            background: {colors['bg_secondary']};
+        }}
         
         /* Button styling */
-        .stButton > button {
-            background: linear-gradient(135deg, #007bff, #0056b3);
+        .stButton > button {{
+            background: linear-gradient(135deg, {colors['accent_blue']}, {'#0056b3' if not is_dark_mode else '#4da6ff'});
             color: white;
             border: none;
             border-radius: 8px;
             padding: 0.5rem 1rem;
             font-weight: 500;
             transition: all 0.2s ease;
-        }
-        .stButton > button:hover {
+        }}
+        .stButton > button:hover {{
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
-        }
+            box-shadow: 0 4px 12px rgba({'31, 119, 180' if is_dark_mode else '0, 123, 255'}, 0.3);
+        }}
         
         /* Slider styling improvements */
-        .stSlider > div > div > div > div {
-            background: linear-gradient(135deg, #007bff, #28a745);
-        }
+        .stSlider > div > div > div > div {{
+            background: linear-gradient(135deg, {colors['accent_blue']}, {colors['accent_green']});
+        }}
         
         /* Success/Warning/Error message styling */
-        .stSuccess {
-            background: linear-gradient(135deg, #d4edda, #c3e6cb);
-            border-left: 4px solid #28a745;
-        }
-        .stWarning {
-            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+        .stSuccess {{
+            background: linear-gradient(135deg, {'rgba(0, 212, 170, 0.2)' if is_dark_mode else '#d4edda'}, {'rgba(0, 212, 170, 0.1)' if is_dark_mode else '#c3e6cb'});
+            border-left: 4px solid {colors['accent_green']};
+            color: {colors['text_primary']};
+        }}
+        .stWarning {{
+            background: linear-gradient(135deg, {'rgba(255, 193, 7, 0.2)' if is_dark_mode else '#fff3cd'}, {'rgba(255, 193, 7, 0.1)' if is_dark_mode else '#ffeaa7'});
             border-left: 4px solid #ffc107;
-        }
-        .stError {
-            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
-            border-left: 4px solid #dc3545;
-        }
+            color: {colors['text_primary']};
+        }}
+        .stError {{
+            background: linear-gradient(135deg, {'rgba(214, 39, 40, 0.2)' if is_dark_mode else '#f8d7da'}, {'rgba(214, 39, 40, 0.1)' if is_dark_mode else '#f5c6cb'});
+            border-left: 4px solid {colors['accent_red']};
+            color: {colors['text_primary']};
+        }}
+        
+        /* Input field styling */
+        .stSelectbox > div > div {{
+            background: {colors['bg_card']};
+            color: {colors['text_primary']};
+            border-color: {colors['border_color']};
+        }}
+        .stNumberInput > div > div > input {{
+            background: {colors['bg_card']};
+            color: {colors['text_primary']};
+            border-color: {colors['border_color']};
+        }}
+        .stTextInput > div > div > input {{
+            background: {colors['bg_card']};
+            color: {colors['text_primary']};
+            border-color: {colors['border_color']};
+        }}
+        
+        /* Expander styling */
+        .streamlit-expanderHeader {{
+            background: {colors['bg_card']};
+            color: {colors['text_primary']};
+        }}
+        .streamlit-expanderContent {{
+            background: {colors['bg_card']};
+            color: {colors['text_primary']};
+        }}
+        
+        /* Tab styling */
+        .stTabs > div > div > div > div {{
+            background: {colors['bg_card']};
+            color: {colors['text_primary']};
+        }}
     </style>
     """,
     unsafe_allow_html=True,
@@ -194,15 +276,15 @@ def get_price_category(price_inr: float) -> Tuple[str, str]:
     """Map price (INR) to a category label and a user-friendly theme color."""
     try:
         if price_inr < 15000:
-            return "Budget", "#28a745"  # Green - friendly and positive
+            return "Budget", colors['accent_green']
         elif price_inr < 30000:
-            return "Mid-Range", "#007bff"  # Blue - trustworthy and calm
+            return "Mid-Range", colors['accent_blue']
         elif price_inr < 50000:
-            return "Premium", "#6f42c1"  # Purple - elegant and sophisticated
+            return "Premium", colors['accent_purple']
         else:
-            return "Flagship", "#dc3545"  # Red - but softer than before
+            return "Flagship", colors['accent_red']
     except Exception:
-        return "Unknown", "#6c757d"  # Neutral gray
+        return "Unknown", colors['text_secondary']
 
 
 def _safe_int_date(y: int, m: int, d: int) -> int:
@@ -298,15 +380,23 @@ def predict_price(
         return {'INR': 0.0, 'USD': 0.0, 'LKR': 0.0, 'EUR': 0.0, 'GBP': 0.0}
 
 
-# Create user-friendly color palettes for charts
+# Create user-friendly color palettes for charts based on theme
 def get_chart_colors():
     """Return user-friendly color palettes for different chart types."""
-    return {
-        'primary': ['#007bff', '#28a745', '#ffc107', '#dc3545', '#6f42c1', '#20c997'],
-        'gradient': ['#e3f2fd', '#bbdefb', '#90caf9', '#64b5f6', '#42a5f5', '#2196f3'],
-        'categorical': ['#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#F44336', '#00BCD4'],
-        'pastel': ['#a8e6cf', '#88d8c0', '#7fcdcd', '#7d84b2', '#8e7cc3', '#c896c8']
-    }
+    if is_dark_mode:
+        return {
+            'primary': ['#00d4aa', '#1f77b4', '#ff7f0e', '#d62728', '#9467bd', '#17becf'],
+            'gradient': ['#2c3e50', '#34495e', '#5d6d7e', '#7f8c8d', '#95a5a6', '#bdc3c7'],
+            'categorical': ['#00d4aa', '#1f77b4', '#ff7f0e', '#9467bd', '#d62728', '#17becf'],
+            'pastel': ['#48c9b0', '#5dade2', '#f7dc6f', '#bb8fce', '#f1948a', '#85c1e9']
+        }
+    else:
+        return {
+            'primary': ['#007bff', '#28a745', '#ffc107', '#dc3545', '#6f42c1', '#20c997'],
+            'gradient': ['#e3f2fd', '#bbdefb', '#90caf9', '#64b5f6', '#42a5f5', '#2196f3'],
+            'categorical': ['#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#F44336', '#00BCD4'],
+            'pastel': ['#a8e6cf', '#88d8c0', '#7fcdcd', '#7d84b2', '#8e7cc3', '#c896c8']
+        }
 
 
 # Header
@@ -371,8 +461,8 @@ if app_mode == "Single Phone Prediction":
         st.subheader("💰 Estimated Price")
         if prices and isinstance(prices, dict) and prices['INR'] > 0:
             st.markdown(f'<div class="price-card">₹ {prices["INR"]:,.0f}</div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="price-card" style="border-color: #007bff; color: #007bff;">Rs. {prices["LKR"]:,.0f}</div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="price-card" style="border-color: #6f42c1; color: #6f42c1;">${prices["USD"]:.2f}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="price-card" style="border-color: {colors["accent_blue"]}; color: {colors["accent_blue"]};">Rs. {prices["LKR"]:,.0f}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="price-card" style="border-color: {colors["accent_purple"]}; color: {colors["accent_purple"]};">${prices["USD"]:.2f}</div>', unsafe_allow_html=True)
             st.markdown(f'<div class="price-card" style="border-color: #20c997; color: #20c997;">€{prices["EUR"]:.2f}</div>', unsafe_allow_html=True)
 
             category, color = get_price_category(prices['INR'])
@@ -423,19 +513,19 @@ elif app_mode == "Phone Comparison":
         col1, col2, col3 = st.columns(3)
 
         with col1:
-            label = st.text_input(f"Label – Phone {i+1}", f"Phone {i+1}", key=f"label_{i}")
-            ram = st.slider(f"RAM (GB) – Phone {i+1}", 2, 24, 8, key=f"ram_{i}")
-            storage = st.slider(f"Storage (GB) – Phone {i+1}", 16, 1024, 128, step=16, key=f"storage_{i}")
+            label = st.text_input(f"Label — Phone {i+1}", f"Phone {i+1}", key=f"label_{i}")
+            ram = st.slider(f"RAM (GB) — Phone {i+1}", 2, 24, 8, key=f"ram_{i}")
+            storage = st.slider(f"Storage (GB) — Phone {i+1}", 16, 1024, 128, step=16, key=f"storage_{i}")
 
         with col2:
-            battery = st.slider(f"Battery (mAh) – Phone {i+1}", 2000, 7000, 4500, step=100, key=f"battery_{i}")
-            rear_cam = st.slider(f"Rear Camera (MP) – Phone {i+1}", 5, 200, 50, step=5, key=f"rear_{i}")
-            front_cam = st.slider(f"Front Camera (MP) – Phone {i+1}", 2, 64, 16, step=1, key=f"front_{i}")
+            battery = st.slider(f"Battery (mAh) — Phone {i+1}", 2000, 7000, 4500, step=100, key=f"battery_{i}")
+            rear_cam = st.slider(f"Rear Camera (MP) — Phone {i+1}", 5, 200, 50, step=5, key=f"rear_{i}")
+            front_cam = st.slider(f"Front Camera (MP) — Phone {i+1}", 2, 64, 16, step=1, key=f"front_{i}")
 
         with col3:
-            proc_score = st.slider(f"Processor Score – Phone {i+1}", 0.0, 10.0, 7.4, step=0.1, key=f"proc_{i}")
+            proc_score = st.slider(f"Processor Score — Phone {i+1}", 0.0, 10.0, 7.4, step=0.1, key=f"proc_{i}")
             ratings = st.number_input(
-                f"Number of Ratings – Phone {i+1}", min_value=0, value=1200, step=50, key=f"ratings_{i}"
+                f"Number of Ratings — Phone {i+1}", min_value=0, value=1200, step=50, key=f"ratings_{i}"
             )
 
         preds = predict_price(
@@ -481,7 +571,7 @@ elif app_mode == "Phone Comparison":
 
         # Build plots in a 2x2 grid with user-friendly colors
         df = pd.DataFrame(phones_data)
-        colors = get_chart_colors()
+        chart_colors = get_chart_colors()
         
         fig = make_subplots(
             rows=2,
@@ -502,7 +592,7 @@ elif app_mode == "Phone Comparison":
                 x=df['Name'], 
                 y=df['Price_INR'], 
                 name='Price (₹)',
-                marker_color=colors['primary'][:len(df)]
+                marker_color=chart_colors['primary'][:len(df)]
             ), 
             row=1, col=1
         )
@@ -516,7 +606,7 @@ elif app_mode == "Phone Comparison":
                 text=df['Name'], 
                 textposition="top center", 
                 name='RAM vs Storage',
-                marker=dict(size=12, color=colors['categorical'][:len(df)])
+                marker=dict(size=12, color=chart_colors['categorical'][:len(df)])
             ),
             row=1, col=2,
         )
@@ -530,7 +620,7 @@ elif app_mode == "Phone Comparison":
                 text=df['Name'], 
                 textposition="top center", 
                 name='Battery vs Camera',
-                marker=dict(size=12, color=colors['pastel'][:len(df)])
+                marker=dict(size=12, color=chart_colors['pastel'][:len(df)])
             ),
             row=2, col=1,
         )
@@ -541,7 +631,7 @@ elif app_mode == "Phone Comparison":
                 x=df['Name'], 
                 y=df['Processor'], 
                 name='Processor Score',
-                marker_color=colors['gradient'][:len(df)]
+                marker_color=chart_colors['gradient'][:len(df)]
             ), 
             row=2, col=2
         )
@@ -550,9 +640,9 @@ elif app_mode == "Phone Comparison":
             height=640,
             showlegend=False,
             title_text="Smartphone Comparison Dashboard",
-            plot_bgcolor='rgba(248,249,250,0.8)',
-            paper_bgcolor='white',
-            font_color='#2c3e50',
+            plot_bgcolor=colors['plot_bg'],
+            paper_bgcolor=colors['paper_bg'],
+            font_color=colors['text_primary'],
             font_size=12,
         )
         st.plotly_chart(fig, use_container_width=True)
@@ -572,11 +662,11 @@ elif app_mode == "Phone Comparison":
         st.markdown(
             f"""
             <div class="comparison-card">
-                <h3 style="margin:4px 0; color: #28a745;">🥇 {best_value['Name']}</h3>
+                <h3 style="margin:4px 0; color: {colors['accent_green']};">🥇 {best_value['Name']}</h3>
                 <p class="tight"><strong>Price:</strong> ₹{best_value['Price_INR']:,.0f} (${best_value['Price_USD']:.2f})</p>
                 <p class="tight"><strong>Specs:</strong> {int(best_value['RAM'])}GB RAM • {int(best_value['Storage'])}GB Storage • {int(best_value['Battery'])}mAh • {int(best_value['RearCam'])}MP Camera</p>
                 <p class="tight"><strong>Processor Score:</strong> {best_value['Processor']:.1f}/10</p>
-                <p class="tight" style="color: #28a745;"><strong>Value Score:</strong> {best_value['Value_Score']:.2f} (higher is better value)</p>
+                <p class="tight" style="color: {colors['accent_green']};"><strong>Value Score:</strong> {best_value['Value_Score']:.2f} (higher is better value)</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -656,11 +746,11 @@ elif app_mode == "Budget Forecasting":
 
         price_diff = preds['INR'] - budget_inr
         if abs(price_diff) <= 2000:
-            status, color, emoji = "Perfect Match!", "#28a745", "✅"
+            status, color, emoji = "Perfect Match!", colors['accent_green'], "✅"
         elif price_diff > 0:
-            status, color, emoji = "Over Budget", "#dc3545", "⚠️"
+            status, color, emoji = "Over Budget", colors['accent_red'], "⚠️"
         else:
-            status, color, emoji = "Under Budget", "#007bff", "💎"
+            status, color, emoji = "Under Budget", colors['accent_blue'], "💎"
 
         st.markdown(
             f"""
@@ -719,9 +809,9 @@ elif app_mode == "Budget Forecasting":
         for i, tip in enumerate(tips):
             st.markdown(
                 f"""
-                <div style="background: linear-gradient(135deg, #ffffff, #f8f9fa); 
+                <div style="background: linear-gradient(135deg, {colors['bg_card']}, {colors['hover_bg']}); 
                            padding: 12px 16px; margin: 8px 0; border-radius: 8px; 
-                           border-left: 3px solid #007bff;">
+                           border-left: 3px solid {colors['accent_blue']};">
                     {tip}
                 </div>
                 """, 
@@ -744,7 +834,7 @@ elif app_mode == "Market Analysis":
     prices = [price_segments[s]['avg_price'] for s in segments]
     shares = [price_segments[s]['market_share'] for s in segments]
     
-    colors = get_chart_colors()
+    chart_colors = get_chart_colors()
 
     col1, col2 = st.columns(2)
     with col1:
@@ -754,19 +844,19 @@ elif app_mode == "Market Analysis":
             y=prices, 
             title="Average Price by Market Segment", 
             color=prices, 
-            color_continuous_scale="Blues",
+            color_continuous_scale="Viridis" if is_dark_mode else "Blues",
             labels={'x': 'Market Segment', 'y': 'Average Price (₹)'}
         )
         fig_price.update_layout(
-            plot_bgcolor='rgba(248,249,250,0.8)', 
-            paper_bgcolor='white', 
-            font_color='#2c3e50',
+            plot_bgcolor=colors['plot_bg'], 
+            paper_bgcolor=colors['paper_bg'], 
+            font_color=colors['text_primary'],
             showlegend=False
         )
         fig_price.update_traces(
             texttemplate='₹%{y:,.0f}', 
             textposition='outside',
-            marker_line_color='white',
+            marker_line_color=colors['bg_card'],
             marker_line_width=1
         )
         st.plotly_chart(fig_price, use_container_width=True)
@@ -777,18 +867,18 @@ elif app_mode == "Market Analysis":
             values=shares, 
             names=segments, 
             title="Market Share by Segment",
-            color_discrete_sequence=colors['categorical']
+            color_discrete_sequence=chart_colors['categorical']
         )
         fig_share.update_layout(
-            plot_bgcolor='rgba(248,249,250,0.8)', 
-            paper_bgcolor='white', 
-            font_color='#2c3e50'
+            plot_bgcolor=colors['plot_bg'], 
+            paper_bgcolor=colors['paper_bg'], 
+            font_color=colors['text_primary']
         )
         fig_share.update_traces(
             textposition='inside', 
             textinfo='percent+label',
             textfont_size=12,
-            marker_line_color='white',
+            marker_line_color=colors['bg_card'],
             marker_line_width=2
         )
         st.plotly_chart(fig_share, use_container_width=True)
@@ -796,7 +886,7 @@ elif app_mode == "Market Analysis":
     st.subheader("💼 Detailed Segment Analysis")
     
     # Create a more detailed analysis with cards
-    segment_colors = ['#28a745', '#007bff', '#6f42c1', '#dc3545']
+    segment_colors = [colors['accent_green'], colors['accent_blue'], colors['accent_purple'], colors['accent_red']]
     
     for i, (seg, data) in enumerate(price_segments.items()):
         color = segment_colors[i]
@@ -835,9 +925,9 @@ elif app_mode == "Market Analysis":
     for insight in insights:
         st.markdown(
             f"""
-            <div style="background: linear-gradient(135deg, #e3f2fd, #f8f9fa); 
+            <div style="background: linear-gradient(135deg, {colors['bg_card']}, {colors['hover_bg']}); 
                        padding: 12px 16px; margin: 8px 0; border-radius: 8px; 
-                       border-left: 3px solid #2196f3;">
+                       border-left: 3px solid {colors['accent_blue']};">
                 {insight}
             </div>
             """, 
@@ -864,6 +954,7 @@ else:
             - 💰 **Budget Planning**: Find the perfect phone within your budget
             - 📊 **Market Insights**: Understand market trends and segments
             - 🌍 **Multi-Currency Support**: Prices in INR, USD, LKR, and EUR
+            - 🎨 **Theme Support**: Choose between Light and Dark modes for better experience
             """
         )
         
@@ -891,6 +982,11 @@ else:
             1. Explore different price segments
             2. Understand market distribution
             3. Read insights about consumer trends
+            
+            **🔹 Theme Selection**
+            1. Use the sidebar to switch between Light and Dark modes
+            2. All charts and interface elements adapt to your chosen theme
+            3. Your preference enhances readability and user experience
             """
         )
     
@@ -911,6 +1007,12 @@ else:
             - Processor performance score
             - Market ratings and reviews count
             
+            **🎨 Theme System**
+            - **Light Mode**: Clean, bright interface with soft colors
+            - **Dark Mode**: Easy on eyes with high contrast elements
+            - **Dynamic Colors**: All charts and UI elements adapt to chosen theme
+            - **Accessibility**: Optimized color contrast for better readability
+            
             **🔒 Privacy & Security**
             - No personal data collection
             - All processing runs locally
@@ -926,15 +1028,16 @@ else:
 
 # Enhanced Footer
 st.markdown("---")
+theme_icon = "🌙" if is_dark_mode else "☀️"
 st.markdown(
-    """
-    <div style="text-align:center; background: linear-gradient(135deg, #f8f9fa, #e9ecef); 
-                padding: 20px; border-radius: 10px; margin: 20px 0;">
-        <h4 style="color: #2c3e50; margin-bottom: 8px;">📱 Smartphone Price Predictor & Analyzer</h4>
-        <p style="color: #6c757d; margin-bottom: 8px;">
-            Powered by Machine Learning • Built with Streamlit & Plotly
+    f"""
+    <div style="text-align:center; background: linear-gradient(135deg, {colors['bg_card']}, {colors['hover_bg']}); 
+                padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid {colors['border_color']};">
+        <h4 style="color: {colors['text_primary']}; margin-bottom: 8px;">📱 Smartphone Price Predictor & Analyzer</h4>
+        <p style="color: {colors['text_secondary']}; margin-bottom: 8px;">
+            Powered by Machine Learning • Built with Streamlit & Plotly • {theme_icon} {theme_mode}
         </p>
-        <p style="color: #6c757d; font-size: 0.9rem;">
+        <p style="color: {colors['text_secondary']}; font-size: 0.9rem;">
             💡 <strong>Pro Tip:</strong> For better performance, retrain your model without the 'Phone Name' feature to simplify the prediction pipeline.
         </p>
     </div>
